@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Sarla-js-0.0.0">
+    <output-path>C:\node\Sarla\build\libs</output-path>
+    <root id="archive" name="Sarla-js-0.0.0.jar">
+      <element id="module-output" name="cn.apisium.sarla.Sarla.jsMain" />
+    </root>
+  </artifact>
+</component>
