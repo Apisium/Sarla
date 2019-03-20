@@ -111,8 +111,12 @@ inline fun varElement(className: String, attr: Attr<HTMLAttributes<HTMLElement>>
 inline fun video(className: String, attr: Attr<VideoHTMLAttributes<HTMLVideoElement>>, noinline block: Nodes?)
 inline fun wbr(className: String, attr: Attr<HTMLAttributes<HTMLElement>>, noinline block: Nodes?)`.split('\n')
 require('fs').writeFileSync('names.temp', a.map(r => {
-    /*return 'actual ' + r + ' {\nval a = js("{ __proto__: null, className: className }").unsafeCast<' +
-        r.match(/Attr<(.+?)>>/)[1] + '>>()\na.attr()\ntag("' +
-        r.match(/fun (.+?)\(/)[1].replace('Element', '') + '", a, block)\n}'*/
-    return `actual ${r} { tag("${r.match(/fun (.+?)\(/)[1].replace('Element', '')}", className, block) }`
+    return 'actual ' + r + ' {\nval b = NodeBlock()\nb.block()\nval a = js("new Object").unsafeCast<' +
+        r.match(/Attr<(.+?)>>/)[1] + '>>()\na.attr()\na.className = className\ntag2("' +
+        r.match(/fun (.+?)\(/)[1].replace('Element', '') + '", a, b)\n}'
+    /*return `actual ${r} {
+        val b = NodeBlock(this)
+        b.block()
+        tag2("${r.match(/fun (.+?)\(/)[1].replace('Element', '')}", className, b)
+    }`*/
 }).join('\n'))

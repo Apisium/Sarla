@@ -1,12 +1,14 @@
 package cn.apisium.sarla
 
-import cn.apisium.sarla.nodes.NodeBlock
-import cn.apisium.sarla.utils.NativeArray
+import cn.apisium.sarla.nodes.DataNodeBlock
+import cn.apisium.sarla.utils.NativeObject
+import cn.apisium.sarla.utils.NativeSet
 
+actual class Data<T: Any> @PublishedApi internal actual constructor(var value: T, val provider: Provider) {
+    var nodes = NativeSet<DataNodeBlock>()
+    var caches = NativeObject<Any, Data<*>>()
 
-actual class Data <T: Any> actual constructor(actual val data: T) {
-    val cache = js("{}")
-    val nodes = NativeArray<NodeBlock>()
-
-    actual operator fun invoke() = data
+    actual operator fun invoke(value: T) {
+        this.value = value
+    }
 }

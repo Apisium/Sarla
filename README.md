@@ -11,6 +11,30 @@ A new lightweight frontend framework built on Kotlin.
 - Lightweight
 - Plugin system
 
+## Hello World?
+
+```kotlin
+fun main() {
+    render {
+        +"Hello World!"
+    }
+}
+```
+
+## Functional Component
+
+```kotlin
+val helloWorld = sarla {
+    var times = data(0)
+    h {
+        button({ onClick = { times++ } }) { +"Click me!" }
+        div(0) {
+            +"You clicked ${times()} times"
+        }
+    }
+}
+```
+
 ## Author
 
 Shirasawa - Apisium

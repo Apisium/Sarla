@@ -1,5 +1,5 @@
-# Created by https://www.gitignore.io/api/node,jetbrains+iml
-# Edit at https://www.gitignore.io/?templates=node,jetbrains+iml
+# Created by https://www.gitignore.io/api/baseNode,jetbrains+iml
+# Edit at https://www.gitignore.io/?templates=baseNode,jetbrains+iml
 
 ### JetBrains+iml ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
@@ -107,7 +107,7 @@ coverage
 # Bower dependency directory (https://bower.io/)
 bower_components
 
-# node-waf configuration
+# baseNode-waf configuration
 .lock-wscript
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
@@ -167,4 +167,4 @@ typings/
 # Temp files
 *.temp
 
-# End of https://www.gitignore.io/api/node,jetbrains+iml
+# End of https://www.gitignore.io/api/baseNode,jetbrains+iml

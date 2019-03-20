@@ -34,7 +34,7 @@ external interface DataTransfer {
 
 external interface BaseSyntheticEvent<E, C, T> {
     @Deprecated("JS only.")
-    val currentTarget: C
+    val current: C
     @Deprecated("JS only.")
     val target: T
     val bubbles: Boolean
@@ -42,13 +42,13 @@ external interface BaseSyntheticEvent<E, C, T> {
     val defaultPrevented: Boolean
     val eventPhase: Number
     val isTrusted: Boolean
-    fun preventDefault()
     fun isDefaultPrevented(): Boolean
-    fun stopPropagation()
     fun isPropagationStopped(): Boolean
     fun persist()
     val timeStamp: Number
     val type: String
+    var canceled: Boolean
+    var returnValue: Boolean
 }
 
 external interface SyntheticEvent<T, E> : BaseSyntheticEvent<E, T, EventTarget>

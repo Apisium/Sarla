@@ -9,15 +9,15 @@ version '0.0.0'
 
 apply plugin: 'maven-publish'
 
-task copyFiles(type: Copy) {
-    from 'src/jsMain/resources'
-    into 'nuild/kotlin/js'
-}
-
 kotlin {
     targets {
 //        fromPreset(presets.jvm, 'jvm')
-        fromPreset(presets.js, 'js')
+        configure(fromPreset(presets.js, 'js')) {
+            tasks.getByName(compilations.main.compileKotlinTaskName).kotlinOptions {
+                sourceMap = true
+                sourceMapEmbedSources = "always"
+            }
+        }
         // For ARM, preset should be changed to presets.iosArm32 or presets.iosArm64
         // For Linux, preset should be changed to e.g. presets.linuxX64
         // For MacOS, preset should be changed to e.g. presets.macosX64

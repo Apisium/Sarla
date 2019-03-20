@@ -234,7 +234,6 @@ external interface CharacterData : Node, NonDocumentTypeChildNode, ChildNode {
     fun replaceData(offset: Int, count: Int, data: String)
 }
 
-@Deprecated("JS only.")
 external interface DocumentFragment : Node, NonElementParentNode, ParentNode {
     override val children: HTMLCollection
     override val firstElementChild: Element?
