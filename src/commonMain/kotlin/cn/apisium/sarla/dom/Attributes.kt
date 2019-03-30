@@ -3,7 +3,6 @@
 package cn.apisium.sarla.dom
 
 import cn.apisium.sarla.SarlaDsl
-import sample.log
 
 typealias EventHandler<E> = (event: E) -> Unit
 
@@ -23,10 +22,6 @@ typealias UIEventHandler<T> = EventHandler<UIEvent<T>>
 typealias WheelEventHandler<T> = EventHandler<WheelEvent<T>>
 typealias AnimationEventHandler<T> = EventHandler<AnimationEvent<T>>
 typealias TransitionEventHandler<T> = EventHandler<TransitionEvent<T>>
-
-inline fun HTMLAttributes<*>.style(block: CSSProperties.() -> Unit) {
-    log(2333)
-}
 
 @SarlaDsl
 external interface DOMAttributes<T> {

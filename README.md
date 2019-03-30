@@ -1,6 +1,6 @@
 # Sarla
 
-A new lightweight frontend framework built on Kotlin.
+A new and lightweight frontend framework built on Kotlin.
 
 ## Features
 

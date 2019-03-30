@@ -1,44 +1,40 @@
 package sample
 
-import cn.apisium.sarla.*
-import cn.apisium.sarla.dom.DocumentFragment
+import cn.apisium.sarla.inc
+import cn.apisium.sarla.render
+import cn.apisium.sarla.sarla
 
-val fuck = sarla {
+val component = sarla {
     var times = data(0)
-    val loading = data(false)
-    effect {
-        // Do sth...
-        loading(true)
-    }
     h {
         button({ onClick = { times++ } }) { +"Click me!" }
-        div(0) {
-            if (loading()) +"Loading..."
-            else +times()
+        div(0, { style { color = "red" }}) {
+            +"You have clicked: "
+            +times
         }
     }
 }
-
-private class TestImpl(p: Provider): Sarla(p), EffectPreInsert {
-    override fun preInsert(elm: DocumentFragment) {
-        log(elm)
-    }
-
-    override fun render() = h {
-        a({ href = "hhh"}) {}
-        div({ style { color = "red" } }) { +"Hello World!" }
-        div {
-            button({ onClick = { println(233) } }) { +"Click This!" }
-        }
-    }
-}
-
-private val Test = pack(TestImpl::class)
 
 fun main() {
     render {
-        Test()
+        component()
     }
 }
+
+//private class TestImpl(p: Provider): Sarla(p), EffectPreInsert {
+//    var times = data(0)
+//    override fun preInsert(elm: DocumentFragment) {
+//        log(elm)
+//    }
+//
+//    override fun render() = h {
+//        div(0, { style { color = "red" } }) { +times }
+//        div {
+//            button({ onClick = { times++ } }) { +"Click This!" }
+//        }
+//    }
+//}
+//
+//private val Test = pack(TestImpl::class)
 
 expect fun log(vararg args: Any)

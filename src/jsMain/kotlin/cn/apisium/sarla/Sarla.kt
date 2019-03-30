@@ -42,7 +42,12 @@ actual class SarlaInstant <T: Sarla> actual constructor(val clazz: KClass<T>) {
     }
 }
 
-actual operator fun <T: Any> Data<T>.invoke() = value
+actual class SarlaInlineInstant<T: Sarla> actual constructor(val block: T.() -> Nodes)
+class SarlaInlineImpl(provider: Provider, block: Sarla.() -> Nodes): Sarla(provider) {
+    val nodes = this.block()
+    override fun render() = nodes
+}
+
 actual operator fun Data<Int>.inc(): Data<Int> {
     value++
     provider.notify(this)

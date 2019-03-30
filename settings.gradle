@@ -8,6 +8,3 @@ pluginManagement {
     }
 }
 rootProject.name = 'Sarla'
-
-
-enableFeaturePreview('GRADLE_METADATA')

@@ -3,6 +3,7 @@
 package cn.apisium.sarla.nodes
 
 import cn.apisium.sarla.DataNodes
+import cn.apisium.sarla.Nodes
 import cn.apisium.sarla.Sarla
 import cn.apisium.sarla.dom.Comment
 import cn.apisium.sarla.dom.Text
@@ -20,7 +21,11 @@ class S <T: Sarla, P>(parent: BaseNode?, val clazz: KClass<T>,
                       val props: P, val nodes: Any?, val hasProp: Boolean): DataNodeBlock(parent, null) {
     var instant: Sarla
 }
-class T(parent: BaseNode?, val value: String): BaseNode(parent) {
+class I <T: Sarla, P>(parent: BaseNode?, val block: T.() -> Nodes,
+                      val props: P, val nodes: Any?, val hasProp: Boolean): DataNodeBlock(parent, null) {
+    var instant: Sarla
+}
+class T(parent: BaseNode?, var value: String): BaseNode(parent) {
     var elm: Text
 }
 class D(parent: BaseNode?, val type: String, renderFunc: DataNodes?, val attr: Any?): DataNodeBlock(parent, renderFunc)

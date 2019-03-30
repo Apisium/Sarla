@@ -1,5 +1,4 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNUSED")
-
 package cn.apisium.sarla
 
 import cn.apisium.sarla.dom.BaseSyntheticEvent
@@ -36,6 +35,8 @@ expect class Provider {
     fun notify(data: Data<*>)
     fun notify(nodes: DataNodeBlock)
     fun notify(sarla: Sarla)
+    fun lock(): Int
+    fun unlock(): Int
 }
 
 abstract class SarlaProp<T>(provider: Provider, val props: T): Sarla(provider)
@@ -45,11 +46,10 @@ expect class SarlaInstant <T: Sarla>(clazz: KClass<T>)
 inline fun <T: Sarla> pack(clazz: KClass<T>) = SarlaInstant(clazz)
 inline fun <P, T: SarlaProp<P>> pack(clazz: KClass<T>) = SarlaInstant(clazz)
 
-class SarlaInlineInstant(block: Sarla.() -> Nodes)
-class SarlaInlineInstantProp<P>(block: Sarla.() -> Nodes)
+expect class SarlaInlineInstant<T: Sarla>(block: T.() -> Nodes)
 
 fun sarla(block: Sarla.() -> Nodes) = SarlaInlineInstant(block)
-fun <P> sarla(block: Sarla.() -> Nodes) = SarlaInlineInstantProp<P>(block)
+fun <P> sarla(block: SarlaProp<P>.() -> Nodes) = SarlaInlineInstant(block)
 
 const val PRE_INSERT = 1
 const val POST_INSERT = 2
@@ -63,7 +63,6 @@ expect inline fun HTMLAttributes<*>.style(block: CSSProperties.() -> Unit)
 inline fun BaseSyntheticEvent<*, *, *>.stopPropagation() { canceled = true }
 inline fun BaseSyntheticEvent<*, *, *>.preventDefault() { returnValue = false }
 
-expect operator fun <T: Any> Data<T>.invoke(): T
 expect operator fun Data<Int>.inc(): Data<Int>
 expect operator fun Data<Int>.dec(): Data<Int>
 

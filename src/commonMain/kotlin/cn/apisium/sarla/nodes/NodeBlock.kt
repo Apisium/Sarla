@@ -12,12 +12,13 @@ expect open class DataNodeBlock: NodeBlock {
 
     //inline operator fun Data<*>.get(key: Any): Data<*>
     //inline operator fun Data<*>.invoke(): Any
-    inline operator fun Data<Int>.plus(value: Int): Int
+    inline operator fun <T: Number> Data<T>.plus(value: T): T
+
+    inline operator fun <T: Number> Data<T>.unaryPlus()
 }
 
 @SarlaDsl
 expect open class NodeBlock {
-
     inline operator fun String.unaryPlus()
 
     inline operator fun Number.unaryPlus()
@@ -30,6 +31,20 @@ expect open class NodeBlock {
     inline operator fun <T: Sarla> SarlaInstant<T>.invoke(noinline block: Nodes? = null)
     inline operator fun <P, T: SarlaProp<P>> SarlaInstant<T>.invoke(void: Int, props: P? = null, noinline block: DataNodes? = null)
     inline operator fun <T: Sarla> SarlaInstant<T>.invoke(void: Int, noinline block: DataNodes? = null)
+
+
+    inline operator fun <P, T: SarlaProp<P>> SarlaInlineInstant<T>.invoke(props: P? = null, noinline block: Nodes? = null)
+    inline operator fun <T: Sarla> SarlaInlineInstant<T>.invoke(noinline block: Nodes? = null)
+    inline operator fun <P, T: SarlaProp<P>> SarlaInlineInstant<T>.invoke(void: Int, props: P? = null, noinline block: DataNodes? = null)
+    inline operator fun <T: Sarla> SarlaInlineInstant<T>.invoke(void: Int, noinline block: DataNodes? = null)
+
+    inline fun tag(void: Int, name: String, className: String? = null, noinline block: DataNodes? = null)
+    inline fun tag(void: Int, name: String, attr: Attr<HTMLAttributes<HTMLElement>>, noinline block: DataNodes? = null)
+    inline fun tag(void: Int, name: String, className: String, attr: Attr<HTMLAttributes<HTMLElement>>, noinline block: DataNodes? = null)
+    inline fun tag(name: String, className: String? = null, block: Nodes)
+    inline fun tag(name: String, attr: Attr<HTMLAttributes<HTMLElement>>, block: Nodes)
+    inline fun tag(name: String, className: String, attr: Attr<HTMLAttributes<HTMLElement>>, block: Nodes)
+    inline fun tag(name: String, className: String? = null)
 
     inline fun a(void: Int, className: String? = null, noinline block: DataNodes? = null)
     inline fun address(void: Int, className: String? = null, noinline block: DataNodes? = null)
