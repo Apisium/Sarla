@@ -8,7 +8,7 @@
     "watch": "gradle jsMainClasses --continuous"
   },
   "author": "Shirasawa",
-  "license": "MIT",
+  "license": "Anti-996",
   "dependencies": {
     "kotlin": "^1.3.21"
   }

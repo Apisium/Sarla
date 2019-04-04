@@ -25,7 +25,6 @@ typealias TransitionEventHandler<T> = EventHandler<TransitionEvent<T>>
 
 @SarlaDsl
 external interface DOMAttributes<T> {
-    var innerHTML: String?
     var onCopy: ClipboardEventHandler<T>?
     var onCopyCapture: ClipboardEventHandler<T>?
     var onCut: ClipboardEventHandler<T>?
@@ -185,7 +184,7 @@ external interface DOMAttributes<T> {
     var onTransitionEnd: TransitionEventHandler<T>?
     var onTransitionEndCapture: TransitionEventHandler<T>?
 }
-external interface HTMLAttributes<T> : DOMAttributes<T> {
+external interface HTMLAttributes<T> {
     var accessKey: String?
     var className: String?
     var contentEditable: Boolean?

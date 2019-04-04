@@ -1,9 +1,10 @@
 package cn.apisium.sarla
 
-import cn.apisium.sarla.dom.createFragmentElement
-import cn.apisium.sarla.dom.renderNewElement
+import cn.apisium.sarla.dom.*
 import cn.apisium.sarla.nodes.*
+import cn.apisium.sarla.utils.NativeArray
 import cn.apisium.sarla.utils.NativeSet
+import kotlin.browser.window
 
 external interface Deadline {
     fun timeRemaining(): Int
@@ -11,12 +12,29 @@ external interface Deadline {
 
 external fun requestIdleCallback(callback: (Deadline) -> Unit)
 
-@Suppress("NOTHING_TO_INLINE")
+@Suppress("UNUSED")
+private val assign = js("""'assign' in Object && Object.assign.toString().indexOf('native') !== -1
+        ? Object.assign : function assign (a, b) { for (var k in b) a[k] = b[k] }""").unsafeCast<(Any, Any) -> Any>()
+@Suppress("UNUSED", "DEPRECATION")
+private val clearAttr = js("""function (attr, elm) {
+        for (var k in attr) switch (k) {
+            case 'className': elm.className = ''; break
+            case 'style': case 'styleText': elm.style.cssText = ''; break
+            default: elm.removeAttribute(k)
+        }
+        elm.sarlaAttr = null
+    }""").unsafeCast<HTMLAttributes<*>, Element>()
+
+@Suppress("NOTHING_TO_INLINE", "UNUSED")
 actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
     private val list = NativeSet<Data<*>>()
     private val nodesList = NativeSet<DataNodeBlock>()
     private var lockNums = 0
     private var started = false
+    private val diffElements = NativeArray<BaseNode>()
+    private val diffAttributes = NativeArray<Any?>()
+    private val willRemoveAttrID = NativeArray<Int>()
+    private val willRemoveAttrNames = NativeArray<Array<String>>()
 
     actual fun lock() = ++lockNums
     actual fun unlock(): Int {
@@ -25,6 +43,12 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
             requestIdleCallback(this::patchLoop)
         }
         return lockNums
+    }
+
+    private fun diffElement(old: NodeBlock, new: HasAttr) {
+        if (new !is D || new !is E) return
+        diffElements.add(old)
+        diffAttributes.add(new.attr)
     }
 
     private fun patchLoop(deadline: Deadline) {
@@ -53,6 +77,7 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
                         val elm = renderNewElement(node.attr, node.type, eventProxy)
                         node.unsafeCast<HasElm>().elm = elm
                         elm.unsafeCast<NodeToSarla>().sarla = node
+                        diffElement(old.unsafeCast<E>(), node)
                         @Suppress("UNSAFE_CALL")
                         parent.currentId++
                     }
@@ -62,6 +87,7 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
                         elm.unsafeCast<NodeToSarla>().sarla = node
                         @Suppress("SMARTCAST_IMPOSSIBLE")
                         if (node.renderFunc != null) node.(node.renderFunc)()
+                        diffElement(old.unsafeCast<E>(), node)
                         @Suppress("UNSAFE_CALL")
                         node.id = parent.id + "," + parent.currentId++
                     }
@@ -100,6 +126,7 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
                         if (parent != null) parent.currentId++
                     }
                     is N -> { // Comment
+                        if (old != null);
                         if (parent != null) parent.currentId++
                     }
                 }
@@ -138,6 +165,62 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
         }
         if (nodesList.size > 0) requestIdleCallback(this::patchLoop)
         else started = false
+        if (diffElements.length() > 0) {
+            lock()
+            window.requestAnimationFrame(this::patch)
+        }
+    }
+
+    private fun patch(unused: Double) {
+        diffElements.forEachIndexed { it, i ->
+            if (it !is E && it !is D) return@forEachIndexed
+            val attr = diffAttributes[i]
+            val oldAttr = it.unsafeCast<HasAttr>().attr
+            if (attr == oldAttr) return@forEachIndexed
+            val elm = it.asDynamic().elm.unsafeCast<Element>()
+            if (oldAttr == null) {
+                patchAttr(attr, elm, eventProxy)
+                return@forEachIndexed
+            }
+            js("""
+                var unset = true
+                if (attr == null) clearAttr(elm)
+                else if (typeof attr === 'string') {
+                    if (typeof oldAttr !== 'string') clearAttr(elm)
+                    elm.className = attr
+                } else for (var name in attr) { var ov = oldAttr[name], nv = attr[name]; if (ov !== nv) switch (name) {
+                    case 'key': break
+                    case 'className': elm.className = attr.className; break
+                    case 'innerHTML': elm.innerHTML = attr.innerHTML; break
+                    case 'style': if(!('styleText' in attr)) assign(elm.style, attr.style); break
+                    case 'styleText': elm.style.cssText = attr.styleText; break
+                    default:
+                        if (name in elm) elm[name] = nv || ''
+                        else if (name[0] === 'o' && name[1] === 'n') {
+                            if (unset) {
+                                unset = false
+                                elm.sarlaAttr = attr
+                            }
+                            attr[name] = null
+                            attr[name = name.toLowerCase()] = nv
+                            if (name.substr(-7) === 'capture') name = name.substring(0, n.length - 7)
+                            if (!root[name]) root[name] = eventProxy
+                        } else elm.setAttribute(name, nv)
+                        ov = null
+                        nv = null
+                    }
+                }
+            """).unsafeCast<Unit>()
+        }
+        willRemoveAttrID.forEachIndexed { id, i ->
+            val elm = diffElements[id].asDynamic().elm.unsafeCast<Element>()
+            @Suppress("UNSAFE_CALL")
+            willRemoveAttrNames[i].forEach { elm.removeAttribute(it) }
+        }
+        willRemoveAttrID.clear()
+        willRemoveAttrNames.clear()
+        diffElements.clear()
+        unlock()
     }
 
     actual fun notify(data: Data<*>) {

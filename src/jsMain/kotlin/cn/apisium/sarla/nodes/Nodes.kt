@@ -5,13 +5,20 @@ package cn.apisium.sarla.nodes
 import cn.apisium.sarla.DataNodes
 import cn.apisium.sarla.Nodes
 import cn.apisium.sarla.Sarla
+import cn.apisium.sarla.dom.CSSProperties
 import cn.apisium.sarla.dom.Comment
+import cn.apisium.sarla.dom.HTMLAttributes
 import cn.apisium.sarla.dom.Text
 import kotlin.reflect.KClass
 
 abstract class BaseNode(val parent: BaseNode?) {
     @JsName("n")
     var next: BaseNode?
+}
+
+external interface HasAttr<T: HTMLAttributes<*>> {
+    var attr: T?
+    var style: CSSProperties?
 }
 
 class N(parent: BaseNode?): BaseNode(parent) {
@@ -28,5 +35,33 @@ class I <T: Sarla, P>(parent: BaseNode?, val block: T.() -> Nodes,
 class T(parent: BaseNode?, var value: String): BaseNode(parent) {
     var elm: Text
 }
-class D(parent: BaseNode?, val type: String, renderFunc: DataNodes?, val attr: Any?): DataNodeBlock(parent, renderFunc)
-class E(parent: BaseNode?, val type: String, val attr: Any?): NodeBlock(parent)
+private external val NULL: String = definedExternally
+actual class D <A: HTMLAttributes<*>>(parent: NodeBlock?, val type: String, val className: String? = NULL, renderFunc: D<A>.() -> Unit): DataNodeBlock(parent, renderFunc.unsafeCast<DataNodes>()), HasAttr<A> {
+    override var attr: A?
+    override var style: CSSProperties?
+    actual inline fun attributes(block: A.() -> Unit) {
+        attr = js("new Object").unsafeCast<A>()
+        @Suppress("SMARTCAST_IMPOSSIBLE")
+        attr.block()
+    }
+    actual inline fun styles(block: CSSProperties.() -> Unit) {
+        style = js("new Object").unsafeCast<CSSProperties>()
+        @Suppress("SMARTCAST_IMPOSSIBLE")
+        style.block()
+    }
+}
+
+actual class E <A: HTMLAttributes<*>>(parent: NodeBlock?, val type: String, val className: String? = NULL): NodeBlock(parent), HasAttr<A> {
+    override var attr: A?
+    override var style: CSSProperties?
+    actual inline fun attributes(block: A.() -> Unit) {
+        attr = js("new Object").unsafeCast<A>()
+        @Suppress("SMARTCAST_IMPOSSIBLE")
+        attr.block()
+    }
+    actual inline fun styles(block: CSSProperties.() -> Unit) {
+        style = js("new Object").unsafeCast<CSSProperties>()
+        @Suppress("SMARTCAST_IMPOSSIBLE")
+        style.block()
+    }
+}

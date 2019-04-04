@@ -26,7 +26,7 @@ expect abstract class Sarla(provider: Provider) {
     inline fun <T: Any> data(value: T): Data<T>
 }
 
-typealias Attr <T> = T.() -> Unit
+typealias Attributes <T> = T.() -> Unit
 typealias DataNodes = DataNodeBlock.() -> Unit
 typealias Nodes = NodeBlock.() -> Unit
 
@@ -43,8 +43,8 @@ abstract class SarlaProp<T>(provider: Provider, val props: T): Sarla(provider)
 
 expect class SarlaInstant <T: Sarla>(clazz: KClass<T>)
 
-inline fun <T: Sarla> pack(clazz: KClass<T>) = SarlaInstant(clazz)
-inline fun <P, T: SarlaProp<P>> pack(clazz: KClass<T>) = SarlaInstant(clazz)
+inline fun <T: Sarla> sarla(clazz: KClass<T>) = SarlaInstant(clazz)
+inline fun <P, T: SarlaProp<P>> sarla(clazz: KClass<T>) = SarlaInstant(clazz)
 
 expect class SarlaInlineInstant<T: Sarla>(block: T.() -> Nodes)
 
@@ -59,7 +59,6 @@ const val SHOULD_PATCH = 16
 const val PRE_RENDER = 32
 const val POST_RENDER = 64
 
-expect inline fun HTMLAttributes<*>.style(block: CSSProperties.() -> Unit)
 inline fun BaseSyntheticEvent<*, *, *>.stopPropagation() { canceled = true }
 inline fun BaseSyntheticEvent<*, *, *>.preventDefault() { returnValue = false }
 

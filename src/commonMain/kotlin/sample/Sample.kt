@@ -7,8 +7,12 @@ import cn.apisium.sarla.sarla
 val component = sarla {
     var times = data(0)
     h {
-        button({ onClick = { times++ } }) { +"Click me!" }
-        div(0, { style { color = "red" }}) {
+        button {
+            attributes { onClick = { times++ } }
+            +"Click me!"
+        }
+        div(0) {
+            styles { color = "red" }
             +"You have clicked: "
             +times
         }

@@ -19,11 +19,6 @@ actual abstract class Sarla actual constructor(actual val provider: Provider) {
     actual inline fun <T : Any> data(value: T) = Data(value, provider)
 }
 
-actual inline fun HTMLAttributes<*>.style(block: CSSProperties.() -> Unit) {
-    val style = js("new Object").unsafeCast<CSSProperties>()
-    style.block()
-    this.asDynamic().style = style
-}
 @Suppress("UNUSED_VARIABLE")
 actual class SarlaInstant <T: Sarla> actual constructor(val clazz: KClass<T>) {
     init {

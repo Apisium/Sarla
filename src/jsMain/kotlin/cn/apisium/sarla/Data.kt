@@ -11,4 +11,6 @@ actual class Data<T: Any> @PublishedApi internal actual constructor(var value: T
     actual operator fun invoke(value: T) {
         this.value = value
     }
+
+    actual override fun toString(): String = throw Exception("Should not call toString.")
 }
