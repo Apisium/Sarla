@@ -8,11 +8,11 @@ val component = sarla {
     var times = data(0)
     h {
         button {
-            attributes { onClick = { times++ } }
+            events { onClick = { times++ } }
             +"Click me!"
         }
         div(0) {
-            styles { color = "red" }
+            styles { color = if (times() > 5) "red" else "blue" }
             +"You have clicked: "
             +times
         }

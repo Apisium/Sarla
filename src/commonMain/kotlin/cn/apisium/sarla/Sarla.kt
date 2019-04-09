@@ -2,9 +2,7 @@
 package cn.apisium.sarla
 
 import cn.apisium.sarla.dom.BaseSyntheticEvent
-import cn.apisium.sarla.dom.CSSProperties
 import cn.apisium.sarla.dom.DocumentFragment
-import cn.apisium.sarla.dom.HTMLAttributes
 import cn.apisium.sarla.nodes.DataNodeBlock
 import cn.apisium.sarla.nodes.NodeBlock
 import kotlin.reflect.KClass

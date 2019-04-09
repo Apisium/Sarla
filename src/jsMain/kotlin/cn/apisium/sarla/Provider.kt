@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cn.apisium.sarla
 
 import cn.apisium.sarla.dom.*
@@ -10,31 +12,27 @@ external interface Deadline {
     fun timeRemaining(): Int
 }
 
+@Suppress("UNUSED")
+private class HasAttrImpl(val elm: Element, val className: String?, val attr: HTMLAttributes<*>?,
+                          val style: CSSProperties?, val event: DOMEvents<*>?) { val kind = 4 }
+
 external fun requestIdleCallback(callback: (Deadline) -> Unit)
 
 @Suppress("UNUSED")
 private val assign = js("""'assign' in Object && Object.assign.toString().indexOf('native') !== -1
         ? Object.assign : function assign (a, b) { for (var k in b) a[k] = b[k] }""").unsafeCast<(Any, Any) -> Any>()
-@Suppress("UNUSED", "DEPRECATION")
-private val clearAttr = js("""function (attr, elm) {
-        for (var k in attr) switch (k) {
-            case 'className': elm.className = ''; break
-            case 'style': case 'styleText': elm.style.cssText = ''; break
-            default: elm.removeAttribute(k)
-        }
-        elm.sarlaAttr = null
-    }""").unsafeCast<HTMLAttributes<*>, Element>()
 
 @Suppress("NOTHING_TO_INLINE", "UNUSED")
-actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
+actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Unit) {
     private val list = NativeSet<Data<*>>()
     private val nodesList = NativeSet<DataNodeBlock>()
     private var lockNums = 0
     private var started = false
     private val diffElements = NativeArray<BaseNode>()
-    private val diffAttributes = NativeArray<Any?>()
     private val willRemoveAttrID = NativeArray<Int>()
     private val willRemoveAttrNames = NativeArray<Array<String>>()
+    private val willRemoveStyleID = NativeArray<Int>()
+    private val willRemoveStyleNames = NativeArray<Array<String>>()
 
     actual fun lock() = ++lockNums
     actual fun unlock(): Int {
@@ -45,10 +43,32 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
         return lockNums
     }
 
-    private fun diffElement(old: NodeBlock, new: HasAttr) {
-        if (new !is D || new !is E) return
-        diffElements.add(old)
-        diffAttributes.add(new.attr)
+    private fun diffElement(o: NodeBlock, new: NodeBlock) {
+        val kind = o.asDynamic().kind.unsafeCast<Int>()
+        if (kind != 4 && kind != 5) return
+        val node = new.unsafeCast<HasAttr<*, *>>()
+        val old = o.unsafeCast<HasAttr<*, *>>()
+        val attr = node.attr
+        val oldAttr = old.attr
+        val i = diffElements.add(new, o)
+        if (attr != null && oldAttr != null) {
+            val arr: Array<String>? = null
+            js("for (var name in oldAttr) if (!(name in attr)) arr ? arr.push(name) : (arr = new Array)")
+            arr?.let {
+                willRemoveAttrID.add(i)
+                willRemoveAttrNames.add(it)
+            }
+        }
+        val style = node.style
+        val oldStyle = old.style
+        if (style != null && oldStyle != null) {
+            val arr: Array<String>? = null
+            js("for (var name in oldStyle) if (!(name in style)) arr ? arr.push(name) : (arr = new Array)")
+            arr?.let {
+                willRemoveStyleID.add(i)
+                willRemoveStyleNames.add(it)
+            }
+        }
     }
 
     private fun patchLoop(deadline: Deadline) {
@@ -67,31 +87,23 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
             var node = js("{}").unsafeCast<BaseNode?>()
             it.start = node.unsafeCast<BaseNode>()
             it.end = it.start
+            val kind = it.asDynamic().kind.unsafeCast<Int>()
             @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
-            it.(it.renderFunc)()
+            if (kind == 4 || kind == 5) {
+                val d = it.unsafeCast<HasAttr<*, *>>()
+                val o = HasAttrImpl(it.elm.unsafeCast<Element>(), d.className, d.attr, d.style, d.event)
+                it.(it.renderFunc)()
+                diffElement(o.unsafeCast<NodeBlock>(), it.unsafeCast<NodeBlock>())
+            } else it.(it.renderFunc)()
             loop@ while (node != null) {
-                console.log(node)
                 val parent = node.parent.unsafeCast<NodeBlock?>()
-                when (node) {
-                    is E -> {
-                        val elm = renderNewElement(node.attr, node.type, eventProxy)
-                        node.unsafeCast<HasElm>().elm = elm
-                        elm.unsafeCast<NodeToSarla>().sarla = node
-                        diffElement(old.unsafeCast<E>(), node)
-                        @Suppress("UNSAFE_CALL")
-                        parent.currentId++
+                when (node.asDynamic().kind.unsafeCast<Int>()) {
+                    0 -> { // Comment
+                        if (old != null) Unit // TODO
+                        if (parent != null) parent.currentId++
                     }
-                    is D -> { // ElementNode
-                        val elm = renderNewElement(node.attr, node.type, eventProxy)
-                        node.unsafeCast<HasElm>().elm = elm
-                        elm.unsafeCast<NodeToSarla>().sarla = node
-                        @Suppress("SMARTCAST_IMPOSSIBLE")
-                        if (node.renderFunc != null) node.(node.renderFunc)()
-                        diffElement(old.unsafeCast<E>(), node)
-                        @Suppress("UNSAFE_CALL")
-                        node.id = parent.id + "," + parent.currentId++
-                    }
-                    is S<*, *> -> @Suppress("UNUSED_VARIABLE") {
+                    1, 2 -> @Suppress("UNUSED_VARIABLE") { // Sarla
+                        node = node.unsafeCast<S<*, *>>()
                         @Suppress("UNSAFE_CALL")
                         node.id = parent.id + "," + parent.currentId++
                         val clazz = node.clazz.js.asDynamic()
@@ -106,28 +118,39 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
                         node.unsafeCast<HasElm>().elm = elm
                         if (flags and 1 == 1) node.unsafeCast<EffectPreInsert>().preInsert(elm)
                     }
-                    is DataNodeBlock -> {
-                        @Suppress("UNSAFE_CALL")
-                        node.id = parent.id + "," + parent.currentId++
-                        @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
-                        node.(node.renderFunc)()
-                        node.unsafeCast<HasElm>().elm = createFragmentElement()
-                    }
-                    is NodeBlock -> {
-                        @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
-                        node.unsafeCast<HasElm>().elm = createFragmentElement()
-                        if (parent != null) parent.currentId++
-                    }
-                    is T -> { // Text
+                    3 -> { // Text
+                        node = node.unsafeCast<T>()
                         if (old is T) {
                             old.elm.nodeValue = node.value
                             old.value = node.value
                         } else Unit // TODO
                         if (parent != null) parent.currentId++
                     }
-                    is N -> { // Comment
-                        if (old != null);
+                    4 -> { // DataElementNode
+                        node = node.unsafeCast<D<*, *>>()
+                        @Suppress("SMARTCAST_IMPOSSIBLE")
+                        if (node.renderFunc != null) node.(node.renderFunc)()
+                        diffElement(old.unsafeCast<E<*, *>>(), node)
+                        @Suppress("UNSAFE_CALL")
+                        node.id = parent.id + "," + parent.currentId++
+                    }
+                    5 -> { // ElementNode
+                        diffElement(old.unsafeCast<E<*, *>>(), node.unsafeCast<E<*, *>>())
+                        @Suppress("UNSAFE_CALL")
+                        parent.currentId++
+                    }
+                    6 -> { // Nodes
+                        @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
+                        node.unsafeCast<HasElm>().elm = createFragmentElement()
                         if (parent != null) parent.currentId++
+                    }
+                    7 -> { // DataNodes
+                        node = node.unsafeCast<DataNodeBlock>()
+                        @Suppress("UNSAFE_CALL")
+                        node.id = parent.id + "," + parent.currentId++
+                        @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
+                        node.(node.renderFunc)()
+                        node.unsafeCast<HasElm>().elm = createFragmentElement()
                     }
                 }
                 val tempNode = node.unsafeCast<NodeBlock>()
@@ -171,54 +194,43 @@ actual class Provider(actual val store: Data<*>, val eventProxy: dynamic) {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun patch(unused: Double) {
-        diffElements.forEachIndexed { it, i ->
-            if (it !is E && it !is D) return@forEachIndexed
-            val attr = diffAttributes[i]
-            val oldAttr = it.unsafeCast<HasAttr>().attr
-            if (attr == oldAttr) return@forEachIndexed
-            val elm = it.asDynamic().elm.unsafeCast<Element>()
-            if (oldAttr == null) {
-                patchAttr(attr, elm, eventProxy)
-                return@forEachIndexed
-            }
-            js("""
-                var unset = true
-                if (attr == null) clearAttr(elm)
-                else if (typeof attr === 'string') {
-                    if (typeof oldAttr !== 'string') clearAttr(elm)
-                    elm.className = attr
-                } else for (var name in attr) { var ov = oldAttr[name], nv = attr[name]; if (ov !== nv) switch (name) {
-                    case 'key': break
-                    case 'className': elm.className = attr.className; break
-                    case 'innerHTML': elm.innerHTML = attr.innerHTML; break
-                    case 'style': if(!('styleText' in attr)) assign(elm.style, attr.style); break
-                    case 'styleText': elm.style.cssText = attr.styleText; break
-                    default:
-                        if (name in elm) elm[name] = nv || ''
-                        else if (name[0] === 'o' && name[1] === 'n') {
-                            if (unset) {
-                                unset = false
-                                elm.sarlaAttr = attr
-                            }
-                            attr[name] = null
-                            attr[name = name.toLowerCase()] = nv
-                            if (name.substr(-7) === 'capture') name = name.substring(0, n.length - 7)
-                            if (!root[name]) root[name] = eventProxy
-                        } else elm.setAttribute(name, nv)
-                        ov = null
-                        nv = null
-                    }
-                }
-            """).unsafeCast<Unit>()
+        var i = diffElements.length()
+        while (i != 0) {
+            val old = diffElements[--i].unsafeCast<HasAttr<*, *>>()
+            val new = diffElements[--i].unsafeCast<HasAttr<*, *>>()
+            val elm = old.asDynamic().elm.unsafeCast<Element>()
+            if (old.className != new.className) elm.className = new.className ?: ""
+            if (new.event == null) {
+                if (old.event != null) elm.asDynamic().sarlaEvents = null
+            } else elm.asDynamic().sarlaEvents = new.event
+            val attr = new.attr
+            val oldAttr = old.attr
+            if (attr == null) {
+                if (oldAttr != null) clearAttr(oldAttr, elm)
+            } else if (oldAttr != null) patchOldAttr(attr, oldAttr, elm)
+
+            val oldStyle = old.style
+            val style = new.style
+            if (style == null) {
+                if (oldStyle != null) clearStyle(oldStyle, elm.style)
+            } else if (oldStyle == null) assign(elm.style, style) else patchStyle(style, oldStyle, elm.style)
         }
-        willRemoveAttrID.forEachIndexed { id, i ->
+        willRemoveAttrID.forEachIndexed { id, j ->
             val elm = diffElements[id].asDynamic().elm.unsafeCast<Element>()
             @Suppress("UNSAFE_CALL")
-            willRemoveAttrNames[i].forEach { elm.removeAttribute(it) }
+            willRemoveAttrNames[j].forEach { elm.removeAttribute(it) }
+        }
+        willRemoveStyleID.forEachIndexed { id, j ->
+            val elm = diffElements[id].asDynamic().elm.unsafeCast<Element>()
+            @Suppress("UNSAFE_CALL")
+            willRemoveStyleNames[j].forEach { elm.style.asDynamic()[it] = "" }
         }
         willRemoveAttrID.clear()
         willRemoveAttrNames.clear()
+        willRemoveStyleID.clear()
+        willRemoveStyleNames.clear()
         diffElements.clear()
         unlock()
     }

@@ -1,10 +1,12 @@
 package cn.apisium.sarla.nodes
 
 import cn.apisium.sarla.Data
-import cn.apisium.sarla.DataNodes
 
 @Suppress("NOTHING_TO_INLINE", "UNUSED_VARIABLE")
-actual open class DataNodeBlock(parent: BaseNode?, var renderFunc: (DataNodeBlock.() -> Unit)?): NodeBlock(parent) {
+actual open class DataNodeBlock(parent: BaseNode?, var renderFunc: (DataNodeBlock.() -> Unit)?) : NodeBlock(parent) {
+    init {
+        asDynamic().kind = 7
+    }
     actual operator fun <T: Any> Data<T>.get(key: Any): Data<T> {
         this.nodes.add(this@DataNodeBlock)
         var d = caches[key]

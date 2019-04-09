@@ -2,7 +2,7 @@
 
 package cn.apisium.sarla.dom
 
-import cn.apisium.sarla.SarlaDsl
+import kotlin.js.JsName
 
 typealias EventHandler<E> = (event: E) -> Unit
 
@@ -23,165 +23,329 @@ typealias WheelEventHandler<T> = EventHandler<WheelEvent<T>>
 typealias AnimationEventHandler<T> = EventHandler<AnimationEvent<T>>
 typealias TransitionEventHandler<T> = EventHandler<TransitionEvent<T>>
 
-@SarlaDsl
-external interface DOMAttributes<T> {
-    var onCopy: ClipboardEventHandler<T>?
+external interface Props {
+    var value: String?
+    var label: String?
+    var selected: Boolean?
+    var text: String?
+    var disabled: Boolean?
+    var defaultSelected: Boolean?
+}
+
+external interface DOMEvents<T> {
+    @JsName("oncopycapture")
     var onCopyCapture: ClipboardEventHandler<T>?
+    @JsName("oncut")
     var onCut: ClipboardEventHandler<T>?
+    @JsName("oncutcapture")
     var onCutCapture: ClipboardEventHandler<T>?
+    @JsName("onpaste")
     var onPaste: ClipboardEventHandler<T>?
+    @JsName("onpastecapture")
     var onPasteCapture: ClipboardEventHandler<T>?
+    @JsName("oncompositionend")
     var onCompositionEnd: CompositionEventHandler<T>?
+    @JsName("oncompositionendcapture")
     var onCompositionEndCapture: CompositionEventHandler<T>?
+    @JsName("oncompositionstart")
     var onCompositionStart: CompositionEventHandler<T>?
+    @JsName("oncompositionstartcapture")
     var onCompositionStartCapture: CompositionEventHandler<T>?
+    @JsName("oncompositionupdate")
     var onCompositionUpdate: CompositionEventHandler<T>?
+    @JsName("oncompositionupdatecapture")
     var onCompositionUpdateCapture: CompositionEventHandler<T>?
+    @JsName("onfocus")
     var onFocus: FocusEventHandler<T>?
+    @JsName("onfocuscapture")
     var onFocusCapture: FocusEventHandler<T>?
+    @JsName("onblur")
     var onBlur: FocusEventHandler<T>?
+    @JsName("onblurcapture")
     var onBlurCapture: FocusEventHandler<T>?
+    @JsName("onchange")
     var onChange: FormEventHandler<T>?
+    @JsName("onchangecapture")
     var onChangeCapture: FormEventHandler<T>?
+    @JsName("onbeforeinput")
     var onBeforeInput: FormEventHandler<T>?
+    @JsName("onbeforeinputcapture")
     var onBeforeInputCapture: FormEventHandler<T>?
+    @JsName("oninput")
     var onInput: FormEventHandler<T>?
+    @JsName("oninputcapture")
     var onInputCapture: FormEventHandler<T>?
+    @JsName("onreset")
     var onReset: FormEventHandler<T>?
+    @JsName("onresetcapture")
     var onResetCapture: FormEventHandler<T>?
+    @JsName("onsubmit")
     var onSubmit: FormEventHandler<T>?
+    @JsName("onsubmitcapture")
     var onSubmitCapture: FormEventHandler<T>?
+    @JsName("oninvalid")
     var onInvalid: FormEventHandler<T>?
+    @JsName("oninvalidcapture")
     var onInvalidCapture: FormEventHandler<T>?
+    @JsName("onload")
     var onLoad: SarlaEventHandler<T>?
+    @JsName("onloadcapture")
     var onLoadCapture: SarlaEventHandler<T>?
+    @JsName("onerror")
     var onError: SarlaEventHandler<T>?
+    @JsName("onerrorcapture")
     var onErrorCapture: SarlaEventHandler<T>?
+    @JsName("onkeydown")
     var onKeyDown: KeyboardEventHandler<T>?
+    @JsName("onkeydowncapture")
     var onKeyDownCapture: KeyboardEventHandler<T>?
+    @JsName("onkeypress")
     var onKeyPress: KeyboardEventHandler<T>?
+    @JsName("onkeypresscapture")
     var onKeyPressCapture: KeyboardEventHandler<T>?
+    @JsName("onkeyup")
     var onKeyUp: KeyboardEventHandler<T>?
+    @JsName("onkeyupcapture")
     var onKeyUpCapture: KeyboardEventHandler<T>?
+    @JsName("onabort")
     var onAbort: SarlaEventHandler<T>?
+    @JsName("onabortcapture")
     var onAbortCapture: SarlaEventHandler<T>?
+    @JsName("oncanplay")
     var onCanPlay: SarlaEventHandler<T>?
+    @JsName("oncanplaycapture")
     var onCanPlayCapture: SarlaEventHandler<T>?
+    @JsName("oncanplaythrough")
     var onCanPlayThrough: SarlaEventHandler<T>?
+    @JsName("oncanplaythroughcapture")
     var onCanPlayThroughCapture: SarlaEventHandler<T>?
+    @JsName("ondurationchange")
     var onDurationChange: SarlaEventHandler<T>?
+    @JsName("ondurationchangecapture")
     var onDurationChangeCapture: SarlaEventHandler<T>?
+    @JsName("onemptied")
     var onEmptied: SarlaEventHandler<T>?
+    @JsName("onemptiedcapture")
     var onEmptiedCapture: SarlaEventHandler<T>?
+    @JsName("onencrypted")
     var onEncrypted: SarlaEventHandler<T>?
+    @JsName("onencryptedcapture")
     var onEncryptedCapture: SarlaEventHandler<T>?
+    @JsName("onended")
     var onEnded: SarlaEventHandler<T>?
+    @JsName("onendedcapture")
     var onEndedCapture: SarlaEventHandler<T>?
+    @JsName("onloadeddata")
     var onLoadedData: SarlaEventHandler<T>?
+    @JsName("onloadeddatacapture")
     var onLoadedDataCapture: SarlaEventHandler<T>?
+    @JsName("onloadedmetadata")
     var onLoadedMetadata: SarlaEventHandler<T>?
+    @JsName("onloadedmetadatacapture")
     var onLoadedMetadataCapture: SarlaEventHandler<T>?
+    @JsName("onloadstart")
     var onLoadStart: SarlaEventHandler<T>?
+    @JsName("onloadstartcapture")
     var onLoadStartCapture: SarlaEventHandler<T>?
+    @JsName("onpause")
     var onPause: SarlaEventHandler<T>?
+    @JsName("onpausecapture")
     var onPauseCapture: SarlaEventHandler<T>?
+    @JsName("onplay")
     var onPlay: SarlaEventHandler<T>?
+    @JsName("onplaycapture")
     var onPlayCapture: SarlaEventHandler<T>?
+    @JsName("onplaying")
     var onPlaying: SarlaEventHandler<T>?
+    @JsName("onplayingcapture")
     var onPlayingCapture: SarlaEventHandler<T>?
+    @JsName("onprogress")
     var onProgress: SarlaEventHandler<T>?
+    @JsName("onprogresscapture")
     var onProgressCapture: SarlaEventHandler<T>?
+    @JsName("onratechange")
     var onRateChange: SarlaEventHandler<T>?
+    @JsName("onratechangecapture")
     var onRateChangeCapture: SarlaEventHandler<T>?
+    @JsName("onseeked")
     var onSeeked: SarlaEventHandler<T>?
+    @JsName("onseekedcapture")
     var onSeekedCapture: SarlaEventHandler<T>?
+    @JsName("onseeking")
     var onSeeking: SarlaEventHandler<T>?
+    @JsName("onseekingcapture")
     var onSeekingCapture: SarlaEventHandler<T>?
+    @JsName("onstalled")
     var onStalled: SarlaEventHandler<T>?
+    @JsName("onstalledcapture")
     var onStalledCapture: SarlaEventHandler<T>?
+    @JsName("onsuspend")
     var onSuspend: SarlaEventHandler<T>?
+    @JsName("onsuspendcapture")
     var onSuspendCapture: SarlaEventHandler<T>?
+    @JsName("ontimeupdate")
     var onTimeUpdate: SarlaEventHandler<T>?
+    @JsName("ontimeupdatecapture")
     var onTimeUpdateCapture: SarlaEventHandler<T>?
+    @JsName("onvolumechange")
     var onVolumeChange: SarlaEventHandler<T>?
+    @JsName("onvolumechangecapture")
     var onVolumeChangeCapture: SarlaEventHandler<T>?
+    @JsName("onwaiting")
     var onWaiting: SarlaEventHandler<T>?
+    @JsName("onwaitingcapture")
     var onWaitingCapture: SarlaEventHandler<T>?
+    @JsName("onclick")
     var onClick: MouseEventHandler<T>?
+    @JsName("onclickcapture")
     var onClickCapture: MouseEventHandler<T>?
+    @JsName("oncontextmenu")
     var onContextMenu: MouseEventHandler<T>?
+    @JsName("oncontextmenucapture")
     var onContextMenuCapture: MouseEventHandler<T>?
+    @JsName("ondoubleclick")
     var onDoubleClick: MouseEventHandler<T>?
+    @JsName("ondoubleclickcapture")
     var onDoubleClickCapture: MouseEventHandler<T>?
+    @JsName("ondrag")
     var onDrag: DragEventHandler<T>?
+    @JsName("ondragcapture")
     var onDragCapture: DragEventHandler<T>?
+    @JsName("ondragend")
     var onDragEnd: DragEventHandler<T>?
+    @JsName("ondragendcapture")
     var onDragEndCapture: DragEventHandler<T>?
+    @JsName("ondragenter")
     var onDragEnter: DragEventHandler<T>?
+    @JsName("ondragentercapture")
     var onDragEnterCapture: DragEventHandler<T>?
+    @JsName("ondragexit")
     var onDragExit: DragEventHandler<T>?
+    @JsName("ondragexitcapture")
     var onDragExitCapture: DragEventHandler<T>?
+    @JsName("ondragleave")
     var onDragLeave: DragEventHandler<T>?
+    @JsName("ondragleavecapture")
     var onDragLeaveCapture: DragEventHandler<T>?
+    @JsName("ondragover")
     var onDragOver: DragEventHandler<T>?
+    @JsName("ondragovercapture")
     var onDragOverCapture: DragEventHandler<T>?
+    @JsName("ondragstart")
     var onDragStart: DragEventHandler<T>?
+    @JsName("ondragstartcapture")
     var onDragStartCapture: DragEventHandler<T>?
+    @JsName("ondrop")
     var onDrop: DragEventHandler<T>?
+    @JsName("ondropcapture")
     var onDropCapture: DragEventHandler<T>?
+    @JsName("onmousedown")
     var onMouseDown: MouseEventHandler<T>?
+    @JsName("onmousedowncapture")
     var onMouseDownCapture: MouseEventHandler<T>?
+    @JsName("onmouseenter")
     var onMouseEnter: MouseEventHandler<T>?
+    @JsName("onmouseleave")
     var onMouseLeave: MouseEventHandler<T>?
+    @JsName("onmousemove")
     var onMouseMove: MouseEventHandler<T>?
+    @JsName("onmousemovecapture")
     var onMouseMoveCapture: MouseEventHandler<T>?
+    @JsName("onmouseout")
     var onMouseOut: MouseEventHandler<T>?
+    @JsName("onmouseoutcapture")
     var onMouseOutCapture: MouseEventHandler<T>?
+    @JsName("onmouseover")
     var onMouseOver: MouseEventHandler<T>?
+    @JsName("onmouseovercapture")
     var onMouseOverCapture: MouseEventHandler<T>?
+    @JsName("onmouseup")
     var onMouseUp: MouseEventHandler<T>?
+    @JsName("onmouseupcapture")
     var onMouseUpCapture: MouseEventHandler<T>?
+    @JsName("onselect")
     var onSelect: SarlaEventHandler<T>?
+    @JsName("onselectcapture")
     var onSelectCapture: SarlaEventHandler<T>?
+    @JsName("ontouchcancel")
     var onTouchCancel: TouchEventHandler<T>?
+    @JsName("ontouchcancelcapture")
     var onTouchCancelCapture: TouchEventHandler<T>?
+    @JsName("ontouchend")
     var onTouchEnd: TouchEventHandler<T>?
+    @JsName("ontouchendcapture")
     var onTouchEndCapture: TouchEventHandler<T>?
+    @JsName("ontouchmove")
     var onTouchMove: TouchEventHandler<T>?
+    @JsName("ontouchmovecapture")
     var onTouchMoveCapture: TouchEventHandler<T>?
+    @JsName("ontouchstart")
     var onTouchStart: TouchEventHandler<T>?
+    @JsName("ontouchstartcapture")
     var onTouchStartCapture: TouchEventHandler<T>?
+    @JsName("onpointerdown")
     var onPointerDown: PointerEventHandler<T>?
+    @JsName("onpointerdowncapture")
     var onPointerDownCapture: PointerEventHandler<T>?
+    @JsName("onpointermove")
     var onPointerMove: PointerEventHandler<T>?
+    @JsName("onpointermovecapture")
     var onPointerMoveCapture: PointerEventHandler<T>?
+    @JsName("onpointerup")
     var onPointerUp: PointerEventHandler<T>?
+    @JsName("onpointerupcapture")
     var onPointerUpCapture: PointerEventHandler<T>?
+    @JsName("onpointercancel")
     var onPointerCancel: PointerEventHandler<T>?
+    @JsName("onpointercancelcapture")
     var onPointerCancelCapture: PointerEventHandler<T>?
+    @JsName("onpointerenter")
     var onPointerEnter: PointerEventHandler<T>?
+    @JsName("onpointerentercapture")
     var onPointerEnterCapture: PointerEventHandler<T>?
+    @JsName("onpointerleave")
     var onPointerLeave: PointerEventHandler<T>?
+    @JsName("onpointerleavecapture")
     var onPointerLeaveCapture: PointerEventHandler<T>?
+    @JsName("onpointerover")
     var onPointerOver: PointerEventHandler<T>?
+    @JsName("onpointerovercapture")
     var onPointerOverCapture: PointerEventHandler<T>?
+    @JsName("onpointerout")
     var onPointerOut: PointerEventHandler<T>?
+    @JsName("onpointeroutcapture")
     var onPointerOutCapture: PointerEventHandler<T>?
+    @JsName("ongotpointercapture")
     var onGotPointerCapture: PointerEventHandler<T>?
+    @JsName("ongotpointercapturecapture")
     var onGotPointerCaptureCapture: PointerEventHandler<T>?
+    @JsName("onlostpointercapture")
     var onLostPointerCapture: PointerEventHandler<T>?
+    @JsName("onlostpointercapturecapture")
     var onLostPointerCaptureCapture: PointerEventHandler<T>?
+    @JsName("onscroll")
     var onScroll: UIEventHandler<T>?
+    @JsName("onscrollcapture")
     var onScrollCapture: UIEventHandler<T>?
+    @JsName("onwheel")
     var onWheel: WheelEventHandler<T>?
+    @JsName("onwheelcapture")
     var onWheelCapture: WheelEventHandler<T>?
+    @JsName("onanimationstart")
     var onAnimationStart: AnimationEventHandler<T>?
+    @JsName("onanimationstartcapture")
     var onAnimationStartCapture: AnimationEventHandler<T>?
+    @JsName("onanimationend")
     var onAnimationEnd: AnimationEventHandler<T>?
+    @JsName("onanimationendcapture")
     var onAnimationEndCapture: AnimationEventHandler<T>?
+    @JsName("onanimationiteration")
     var onAnimationIteration: AnimationEventHandler<T>?
+    @JsName("onanimationiterationcapture")
     var onAnimationIterationCapture: AnimationEventHandler<T>?
+    @JsName("ontransitionend")
     var onTransitionEnd: TransitionEventHandler<T>?
+    @JsName("ontransitionendcapture")
     var onTransitionEndCapture: TransitionEventHandler<T>?
 }
 external interface HTMLAttributes<T> {
@@ -673,7 +837,7 @@ external interface VideoHTMLAttributes<T> : MediaHTMLAttributes<T> {
     var poster: String?
     var width: Any?
 }
-external interface SVGAttributes<T> : DOMAttributes<T> {
+external interface SVGAttributes<T> {
     var className: String?
     var color: String?
     var height: Any?

@@ -2,9 +2,6 @@
 
 package cn.apisium.sarla.dom
 
-import cn.apisium.sarla.SarlaDsl
-
-@SarlaDsl
 external interface CSSProperties {
     var alignContent: String?
     var alignItems: String?

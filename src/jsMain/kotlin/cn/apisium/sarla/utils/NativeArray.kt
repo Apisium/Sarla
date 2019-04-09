@@ -7,6 +7,7 @@ actual class NativeArray<T> {
     actual inline fun length() = arr.length.unsafeCast<Int>()
     actual inline fun clear() { arr = js("[]") }
     actual inline fun add(element: T) = arr.push(element).unsafeCast<Int>()
+    actual inline fun add(a: T, b: T) = arr.push(a, b).unsafeCast<Int>()
     actual inline fun forEach(fn: (T) -> Unit) {
         val len = length()
         var i = 0

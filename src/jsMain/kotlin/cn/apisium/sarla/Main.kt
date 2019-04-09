@@ -9,20 +9,16 @@ external interface HasElm {
     var elm: Node
 }
 
-external interface NodeToSarla {
-    var sarla: BaseNode
-}
-
 actual fun <G: Any> render(store: G, root: Element, block: Nodes): Data<G> {
     @Suppress("UNUSED_VARIABLE")
-    val eventProxy = js("""function (e) {
+    val eventProxy = js("""function fn (e) {
         e = e || window.event
         var target = e.target, nodes = [], unPrevent = true,
             type = 'on' + e.type.toLowerCase()
         if (!target) target = e.target = e.srcElement
         if (!e.returnValue) e.returnValue = true
         do {
-            var attr = target.sarlaAttr
+            var attr = target.sarlaEvents
             if (attr) {
                 if (!e.canceled) {
                     var fn = attr[type]
@@ -54,7 +50,8 @@ actual fun <G: Any> render(store: G, root: Element, block: Nodes): Data<G> {
         e = null
         nodes = null
         target = null
-    }""")
+    }
+    function (name) { if (!root[name]) root[name] = fn }""").unsafeCast<(String) -> Unit>()
     @Suppress("NULL_FOR_NONNULL_TYPE")
     val provider = Provider(null, eventProxy)
     val data = Data(store, provider)
@@ -65,33 +62,13 @@ actual fun <G: Any> render(store: G, root: Element, block: Nodes): Data<G> {
     var node = rootNode as BaseNode?
     loop@ while (node != null) {
         val parent = node.parent.unsafeCast<NodeBlock?>()
-        when (node) {
-            is D -> { // ElementNode
-                val elm = renderNewElement(node.attr, node.type, eventProxy)
-                node.unsafeCast<HasElm>().elm = elm
-                elm.unsafeCast<NodeToSarla>().sarla = node
-                @Suppress("SMARTCAST_IMPOSSIBLE")
-                if (node.renderFunc != null) node.(node.renderFunc)()
-                @Suppress("UNSAFE_CALL")
-                node.id = parent.id + "," + parent.currentId++
+        when (node.asDynamic().kind.unsafeCast<Int>()) {
+            0 -> { // Comment
+                node.unsafeCast<N>().elm = createCommentElement()
+                if (parent != null) parent.currentId++
             }
-            is E -> {
-                val elm = renderNewElement(node.attr, node.type, eventProxy)
-                node.unsafeCast<HasElm>().elm = elm
-                elm.unsafeCast<NodeToSarla>().sarla = node
-                @Suppress("UNSAFE_CALL")
-                parent.currentId++
-            }
-            is I<*, *> -> {
-                @Suppress("UNSAFE_CALL")
-                node.id = parent.id + "," + parent.currentId++
-                val sarla = SarlaInlineImpl(provider, node.block.unsafeCast<Sarla.() -> Nodes>())
-                node.instant = sarla
-                node.(sarla.nodes)()
-                val elm = createFragmentElement()
-                node.unsafeCast<HasElm>().elm = elm
-            }
-            is S<*, *> -> @Suppress("UNUSED_VARIABLE") {
+            1 -> @Suppress("UNUSED_VARIABLE") { // Sarla
+                node = node.unsafeCast<S<*, *>>()
                 @Suppress("UNSAFE_CALL")
                 node.id = parent.id + "," + parent.currentId++
                 val clazz = node.clazz.js.asDynamic()
@@ -105,25 +82,48 @@ actual fun <G: Any> render(store: G, root: Element, block: Nodes): Data<G> {
                 node.unsafeCast<HasElm>().elm = elm
                 if (flags and 1 == 1) node.unsafeCast<EffectPreInsert>().preInsert(elm)
             }
-            is DataNodeBlock -> {
+            2 -> { // Inline
+                node = node.unsafeCast<I<*, *>>()
+                @Suppress("UNSAFE_CALL")
+                node.id = parent.id + "," + parent.currentId++
+                val sarla = SarlaInlineImpl(provider, node.block.unsafeCast<Sarla.() -> Nodes>())
+                node.instant = sarla
+                node.(sarla.nodes)()
+                val elm = createFragmentElement()
+                node.unsafeCast<HasElm>().elm = elm
+            }
+            3 -> { // Text
+                node = node.unsafeCast<T>()
+                node.elm = createStringElement(node.value)
+                if (parent != null) parent.currentId++
+            }
+            4 -> { // DataElementNode
+                node = node.unsafeCast<D<*, *>>()
+                @Suppress("SMARTCAST_IMPOSSIBLE")
+                if (node.renderFunc != null) node.(node.renderFunc)()
+                val elm = renderNewElement(node, eventProxy)
+                node.unsafeCast<HasElm>().elm = elm
+                @Suppress("UNSAFE_CALL")
+                node.id = parent.id + "," + parent.currentId++
+            }
+            5 -> { // ElementNode
+                val elm = renderNewElement(node.unsafeCast<E<*, *>>(), eventProxy)
+                node.unsafeCast<HasElm>().elm = elm
+                @Suppress("UNSAFE_CALL")
+                parent.currentId++
+            }
+            6 -> { // Nodes
+                @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
+                node.unsafeCast<HasElm>().elm = createFragmentElement()
+                if (parent != null) parent.currentId++
+            }
+            7 -> { // DataNodes
+                node = node.unsafeCast<DataNodeBlock>()
                 @Suppress("UNSAFE_CALL")
                 if (parent != null) node.id = parent.id + "," + parent.currentId++
                 @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
                 node.(node.renderFunc)()
                 node.unsafeCast<HasElm>().elm = createFragmentElement()
-            }
-            is NodeBlock -> {
-                @Suppress("UNSAFE_IMPLICIT_INVOKE_CALL")
-                node.unsafeCast<HasElm>().elm = createFragmentElement()
-                if (parent != null) parent.currentId++
-            }
-            is T -> { // Text
-                node.elm = createStringElement(node.value)
-                if (parent != null) parent.currentId++
-            }
-            is N -> { // Comment
-                node.elm = createCommentElement()
-                if (parent != null) parent.currentId++
             }
             else -> throw ClassCastException(node::class.simpleName)
         }

@@ -111,8 +111,14 @@ inline fun varElement(className: String, attr: Attr<HTMLAttributes<HTMLElement>>
 inline fun video(className: String, attr: Attr<VideoHTMLAttributes<HTMLVideoElement>>, noinline block: Nodes?)
 inline fun wbr(className: String, attr: Attr<HTMLAttributes<HTMLElement>>, noinline block: Nodes?)`.split('\n')
 require('fs').writeFileSync('names.temp', a.map(r => {
-    const n = r.match(/fun (.+?)\(/)[1], d = n.replace('Element', ''), t = r.match(/Attr<(.+?)>>/)[1] + '>'
-    return `actual inline fun ${n}(void: Int, className: String?, noinline block: D<${t}>.() -> Unit) { append(D(this, "${d}", className, block)) }`
+    const n = r.match(/fun (.+?)\(/)[1], d = n.replace('Element', ''), t = r.match(/Attr<(.+?)>>/)[1] + '>', g = t.replace(/.+?</, '').replace(/>/, '')
+    //return `actual inline fun ${n}(void: Int, className: String? = null, noinline block: D<${t}, ${g}>.() -> Unit)` //  { append(D(this, "${d}", className, block)) }
+    /*return `actual inline fun ${n}(className: String?, noinline block: E<${t}, ${g}>.() -> Unit) {
+        val e = E<${t}, ${g}>(this, "${d}", className)
+        e.block()
+        append(e)
+    }`*/
+    return `actual inline fun ${n}(className: String?) { append(E<${t}, ${g}>(this, "${d}", className)) }`
     /*return 'actual ' + r + ' {\nval b = NodeBlock()\nb.block()\nval a = js("new Object").unsafeCast<' +
         r.match(/Attr<(.+?)>>/)[1] + '>>()\na.attr()\na.className = className\ntag2("' +
         r.match(/fun (.+?)\(/)[1].replace('Element', '') + '", a, b)\n}'

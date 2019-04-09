@@ -27,7 +27,10 @@ fun main() {
 val helloWorld = sarla {
     var times = data(0)
     h {
-        button({ onClick = { times++ } }) { +"Click me!" }
+        button {
+            events { onClick = { times++ } }
+            +"Click me!"
+        }
         div(0) {
             +"You clicked ${times()} times"
         }

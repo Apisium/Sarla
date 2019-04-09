@@ -1,10 +1,8 @@
 package cn.apisium.sarla
 
-import cn.apisium.sarla.dom.CSSProperties
-import cn.apisium.sarla.dom.HTMLAttributes
 import kotlin.reflect.KClass
 
-@Suppress("NOTHING_TO_INLINE")
+@Suppress("NOTHING_TO_INLINE", "UNUSED")
 actual abstract class Sarla actual constructor(actual val provider: Provider) {
     actual val store = provider.store
 

@@ -390,6 +390,7 @@ external interface Element : Node, ParentNode, NonDocumentTypeChildNode, ChildNo
     val clientLeft: Int
     val clientWidth: Int
     val clientHeight: Int
+    val style: CSSProperties
     fun requestFullscreen(): Any
     fun setPointerCapture(pointerId: Int)
     fun releasePointerCapture(pointerId: Int)
