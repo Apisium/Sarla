@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="net.mengb.Sarla.jvmMain" target="1.6" />
-      <module name="net.mengb.Sarla.jvmTest" target="1.6" />
-      <module name="net.mengb.Sarla.main" target="1.8" />
-      <module name="net.mengb.Sarla.test" target="1.8" />
-    </bytecodeTargetLevel>
+    <option name="BUILD_PROCESS_ADDITIONAL_VM_OPTIONS" value="-Xuse-experimental=kotlin.Experimental" />
   </component>
 </project>

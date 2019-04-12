@@ -14,14 +14,10 @@ val component = sarla {
         }
         div(0) {
             styles { color = if (times() > 5) "red" else "blue" }
-            +"You have clicked: "
-            +times
+            +"You have clicked: ${times()}  "
+            +"You have typed: ${str()}"
         }
-        input()
-        input(0) {
-            events { onChange = {log(it.current.value); str(it.current.value.toUpperCase())} }
-            props { value = str() }
-        }
+        input(str)
     }
 }
 

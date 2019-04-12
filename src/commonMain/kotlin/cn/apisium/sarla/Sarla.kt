@@ -10,6 +10,10 @@ import kotlin.reflect.KClass
 @DslMarker
 annotation class SarlaDsl
 
+@Suppress("EXPERIMENTAL_IS_NOT_ENABLED")
+@Experimental
+annotation class ExperimentalTextHTML
+
 expect abstract class Sarla(provider: Provider) {
     val provider: Provider
     val store: Data<*>
@@ -49,13 +53,13 @@ expect class SarlaInlineInstant<T: Sarla>(block: T.() -> Nodes)
 fun sarla(block: Sarla.() -> Nodes) = SarlaInlineInstant(block)
 fun <P> sarla(block: SarlaProp<P>.() -> Nodes) = SarlaInlineInstant(block)
 
-const val PRE_INSERT = 1
+/*const val PRE_INSERT = 1
 const val POST_INSERT = 2
 const val PRE_REMOVE = 4
 const val POST_REMOVE = 8
 const val SHOULD_PATCH = 16
 const val PRE_RENDER = 32
-const val POST_RENDER = 64
+const val POST_RENDER = 64*/
 
 inline fun BaseSyntheticEvent<*, *, *>.stopPropagation() { canceled = true }
 inline fun BaseSyntheticEvent<*, *, *>.preventDefault() { returnValue = false }

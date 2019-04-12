@@ -2,6 +2,7 @@
 
 package cn.apisium.sarla.nodes
 
+import cn.apisium.sarla.Data
 import cn.apisium.sarla.DataNodes
 import cn.apisium.sarla.Nodes
 import cn.apisium.sarla.Sarla
@@ -51,7 +52,7 @@ class T(parent: BaseNode?, var value: String): BaseNode(parent) {
     var elm: Text
     val kind = 3
 }
-@Suppress("SMARTCAST_IMPOSSIBLE")
+@Suppress("SMARTCAST_IMPOSSIBLE", "NOTHING_TO_INLINE")
 actual class D <A: HTMLAttributes<Q>, Q: Element>(parent: NodeBlock?, val type: String, val className: String?, renderFunc: D<A, Q>.() -> Unit): DataNodeBlock(parent, renderFunc.unsafeCast<DataNodes>()) {
     val kind = 4
     var attr: A?
@@ -74,9 +75,15 @@ actual class D <A: HTMLAttributes<Q>, Q: Element>(parent: NodeBlock?, val type: 
         event = js("new Object").unsafeCast<DOMEvents<Q>>()
         event.block()
     }
+    inline fun bindWith(d: Data<String>) {
+        val v = d()
+        if (prop == null) prop = js("{ value: v }").unsafeCast<Props>() else prop.value = v
+        if (event == null) event = js("new Object").unsafeCast<DOMEvents<Q>>()
+        event.onChange = { d(it.asDynamic().target.value.unsafeCast<String>()) }
+    }
 }
 
-@Suppress("SMARTCAST_IMPOSSIBLE")
+@Suppress("SMARTCAST_IMPOSSIBLE", "NOTHING_TO_INLINE")
 actual class E <A: HTMLAttributes<Q>, Q: Element>(parent: NodeBlock?, val type: String, val className: String?): NodeBlock(parent) {
     val kind = 5
     var attr: A?

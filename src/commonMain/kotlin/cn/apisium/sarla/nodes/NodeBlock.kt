@@ -56,6 +56,11 @@ expect open class NodeBlock {
     inline fun tag(name: String, className: String? = null, block: E<HTMLAttributes<HTMLElement>, HTMLElement>.() -> Unit)
     inline fun tag(name: String, className: String? = null)
 
+    @ExperimentalTextHTML
+    inline fun htmlText(name: String, html: String)
+
+    inline fun input(bind: Data<String>, className: String? = null, noinline block: (D<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>.() -> Unit)? = null)
+
     inline fun a(void: Int, className: String? = null, noinline block: D<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>.() -> Unit)
     inline fun address(void: Int, className: String? = null, noinline block: D<HTMLAttributes<HTMLElement>, HTMLElement>.() -> Unit)
     inline fun area(void: Int, className: String? = null, noinline block: D<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>.() -> Unit)

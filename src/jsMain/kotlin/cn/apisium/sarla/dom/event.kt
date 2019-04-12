@@ -17,8 +17,6 @@ private external interface MyTarget: HTMLElement {
     val disabled: Boolean
 }
 
-private val input2change = js("{ text: null, password: null, search: null, url: null, email: null }")
-
 @Suppress("NOTHING_TO_INLINE", "UNUSED_PARAMETER")
 private inline fun isNotIn(r: dynamic, k: dynamic) = js("typeof r[k] === 'undefined'").unsafeCast<Boolean>()
 @Suppress("NOTHING_TO_INLINE", "UNUSED_PARAMETER")
@@ -111,7 +109,9 @@ internal fun createEventProxy(root: Element): (String, Element) -> Unit {
             try { fn(e) } catch (a: Exception) { console.error(a) }
             if (!e.returnValue && canPrevent) e.asDynamic().preventDefault()
         }
-        if (target.__0 == null && isIn(input2change, target.type)) {
+        val type = target.type
+        if (target.__0 == null && (type == "text" || type == "password" ||
+                    type == "search" || type == "url" || type == "email")) {
             fn = handles.onchange
             if (fn != null) {
                 try { fn(e) } catch (a: Exception) { console.error(a) }

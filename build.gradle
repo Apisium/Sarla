@@ -9,6 +9,10 @@ version '0.0.0'
 
 apply plugin: 'maven-publish'
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions.freeCompilerArgs += ['-Xuse-experimental=kotlin.Experimental']
+}
+
 kotlin {
     targets {
 //        fromPreset(presets.jvm, 'jvm')
@@ -18,9 +22,6 @@ kotlin {
                 sourceMapEmbedSources = "always"
             }
         }
-        // For ARM, preset should be changed to presets.iosArm32 or presets.iosArm64
-        // For Linux, preset should be changed to e.g. presets.linuxX64
-        // For MacOS, preset should be changed to e.g. presets.macosX64
 //        fromPreset(presets.wasm32, 'wasm')
     }
     sourceSets {
