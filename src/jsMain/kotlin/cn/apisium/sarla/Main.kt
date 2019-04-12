@@ -10,48 +10,7 @@ external interface HasElm {
 }
 
 actual fun <G: Any> render(store: G, root: Element, block: Nodes): Data<G> {
-    @Suppress("UNUSED_VARIABLE")
-    val eventProxy = js("""function fn (e) {
-        e = e || window.event
-        var target = e.target, nodes = [], unPrevent = true,
-            type = 'on' + e.type.toLowerCase()
-        if (!target) target = e.target = e.srcElement
-        if (!e.returnValue) e.returnValue = true
-        do {
-            var attr = target.sarlaEvents
-            if (attr) {
-                if (!e.canceled) {
-                    var fn = attr[type]
-                    if (fn) {
-                        e.current = target
-                        try { fn(e) } catch (a) { console.error(a) }
-                        if (unPrevent && !e.returnValue) {
-                            unPrevent = false
-                            if ('preventDefault' in e) e.preventDefault()
-                        }
-                    }
-                }
-                fn = attr[type + 'capture']
-                if (fn) nodes.push(fn, target)
-            }
-            target = target.parentNode
-        } while (target !== root)
-        e.canceled = false
-        var i = nodes.length / 2
-        while (i--) {
-            e.current = nodes[i * 2 + 1]
-            try { nodes[i * 2]() } catch (a) { console.error(a) }
-            if (unPrevent && !e.returnValue) {
-                unPrevent = false
-                if ('preventDefault' in e) e.preventDefault()
-            }
-            if (e.canceled) break
-        }
-        e = null
-        nodes = null
-        target = null
-    }
-    function (name) { if (!root[name]) root[name] = fn }""").unsafeCast<(String) -> Unit>()
+    val eventProxy = createEventProxy(root)
     @Suppress("NULL_FOR_NONNULL_TYPE")
     val provider = Provider(null, eventProxy)
     val data = Data(store, provider)
@@ -59,7 +18,7 @@ actual fun <G: Any> render(store: G, root: Element, block: Nodes): Data<G> {
     provider.asDynamic().store = data
     val rootNode = DataNodeBlock(null, block)
     rootNode.id = ""
-    var node = rootNode as BaseNode?
+    var node = rootNode.unsafeCast<BaseNode?>()
     loop@ while (node != null) {
         val parent = node.parent.unsafeCast<NodeBlock?>()
         when (node.asDynamic().kind.unsafeCast<Int>()) {

@@ -15,12 +15,11 @@ external interface EventListener {
     fun handleEvent(event: Event)
 }
 
-@Deprecated("JS only.")
 external interface EventTarget {
-    fun addEventListener(type: String, callback: EventListener?, options: Any?)
-    fun addEventListener(type: String, callback: ((Event) -> Unit)?, options: Any?)
-    fun removeEventListener(type: String, callback: EventListener?, options: Any?)
-    fun removeEventListener(type: String, callback: ((Event) -> Unit)?, options: Any?)
+    fun addEventListener(type: String, callback: EventListener?, options: Boolean?)
+    fun addEventListener(type: String, callback: ((Event) -> Unit)?, options: Boolean?)
+    fun removeEventListener(type: String, callback: EventListener?, options: Boolean?)
+    fun removeEventListener(type: String, callback: ((Event) -> Unit)?, options: Boolean?)
     fun dispatchEvent(event: Event): Boolean
 }
 

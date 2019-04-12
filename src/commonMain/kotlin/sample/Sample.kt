@@ -6,6 +6,7 @@ import cn.apisium.sarla.sarla
 
 val component = sarla {
     var times = data(0)
+    val str = data("")
     h {
         button {
             events { onClick = { times++ } }
@@ -15,6 +16,11 @@ val component = sarla {
             styles { color = if (times() > 5) "red" else "blue" }
             +"You have clicked: "
             +times
+        }
+        input()
+        input(0) {
+            events { onChange = {log(it.current.value); str(it.current.value.toUpperCase())} }
+            props { value = str() }
         }
     }
 }

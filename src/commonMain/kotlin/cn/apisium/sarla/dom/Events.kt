@@ -33,9 +33,7 @@ external interface DataTransfer {
 }
 
 external interface BaseSyntheticEvent<E, C, T> {
-    @Deprecated("JS only.")
     val current: C
-    @Deprecated("JS only.")
     val target: T
     val bubbles: Boolean
     val cancelable: Boolean
@@ -81,7 +79,9 @@ external interface FocusEvent<T> : SyntheticEvent<T, FocusEvent<T>> {
     val relatedTarget: EventTarget
 }
 
-external interface FormEvent<T> : SyntheticEvent<T, FormEvent<T>>
+external interface FormEvent<T> : SyntheticEvent<T, FormEvent<T>> {
+    val isComposing: Boolean
+}
 external interface InvalidEvent<T> : SyntheticEvent<T, InvalidEvent<T>>
 external interface ChangeEvent<T> : SyntheticEvent<T, ChangeEvent<T>>
 external interface KeyboardEvent<T> : SyntheticEvent<T, KeyboardEvent<T>> {

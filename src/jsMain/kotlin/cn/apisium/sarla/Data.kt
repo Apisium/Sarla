@@ -8,8 +8,10 @@ actual class Data<T: Any> @PublishedApi internal actual constructor(var value: T
     var nodes = NativeSet<DataNodeBlock>()
     var caches = NativeObject<Any, Data<*>>()
 
-    actual operator fun invoke(value: T) {
+    actual operator fun invoke(value: T): Data<T> {
         this.value = value
+        provider.notify(this)
+        return this
     }
 
     actual override fun toString(): String = throw Exception("Should not call toString.")

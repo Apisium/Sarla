@@ -23,7 +23,7 @@ private val assign = js("""'assign' in Object && Object.assign.toString().indexO
         ? Object.assign : function assign (a, b) { for (var k in b) a[k] = b[k] }""").unsafeCast<(Any, Any) -> Any>()
 
 @Suppress("NOTHING_TO_INLINE", "UNUSED")
-actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Unit) {
+actual class Provider(actual val store: Data<*>, val eventProxy: (String, Element) -> Unit) {
     private val list = NativeSet<Data<*>>()
     private val nodesList = NativeSet<DataNodeBlock>()
     private var lockNums = 0
@@ -33,12 +33,14 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
     private val willRemoveAttrNames = NativeArray<Array<String>>()
     private val willRemoveStyleID = NativeArray<Int>()
     private val willRemoveStyleNames = NativeArray<Array<String>>()
+    private val willRemovePropID = NativeArray<Int>()
+    private val willRemovePropNames = NativeArray<Array<String>>()
 
     actual fun lock() = ++lockNums
     actual fun unlock(): Int {
         if (lockNums != 0 && --lockNums == 0 && !started && (list.size > 0 || nodesList.size > 0)) {
             started = true
-            requestIdleCallback(this::patchLoop)
+            requestIdleCallback(fn2)
         }
         return lockNums
     }
@@ -69,11 +71,24 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
                 willRemoveStyleNames.add(it)
             }
         }
+        val prop = node.prop
+        val oldProp = old.prop
+        if (prop != null && oldProp != null) {
+            val arr: Array<String>? = null
+            js("for (var name in oldProp) if (!(name in prop)) arr ? arr.push(name) : (arr = new Array)")
+            arr?.let {
+                willRemovePropID.add(i)
+                willRemovePropNames.add(it)
+            }
+        }
     }
 
+    private val fn1 = nodesList::add
+    private val fn2 = this::patchLoop
+    private val fn3 = this::patch
     private fun patchLoop(deadline: Deadline) {
         if (list.size > 0) {
-            list.forEach { it.nodes.forEach(nodesList::add) }
+            list.forEach { it.nodes.forEach(fn1) }
             list.clear()
         }
         val iterator = nodesList.values()
@@ -186,11 +201,11 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
             }
             it.start = oldNode
         }
-        if (nodesList.size > 0) requestIdleCallback(this::patchLoop)
+        if (nodesList.size > 0) requestIdleCallback(fn2)
         else started = false
         if (diffElements.length() > 0) {
             lock()
-            window.requestAnimationFrame(this::patch)
+            window.requestAnimationFrame(fn3)
         }
     }
 
@@ -209,13 +224,19 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
             val oldAttr = old.attr
             if (attr == null) {
                 if (oldAttr != null) clearAttr(oldAttr, elm)
-            } else if (oldAttr != null) patchOldAttr(attr, oldAttr, elm)
+            } else if (oldAttr == null) patchAttr(attr, elm) else patchOldAttr(attr, oldAttr, elm)
 
             val oldStyle = old.style
             val style = new.style
             if (style == null) {
                 if (oldStyle != null) clearStyle(oldStyle, elm.style)
             } else if (oldStyle == null) assign(elm.style, style) else patchStyle(style, oldStyle, elm.style)
+
+            val oldProp = old.prop
+            val prop = new.prop
+            if (prop == null) {
+                if (oldProp != null) clearProp(oldProp, elm)
+            } else if (oldProp == null) assign(elm, prop) else patchProp(prop, oldProp, elm)
         }
         willRemoveAttrID.forEachIndexed { id, j ->
             val elm = diffElements[id].asDynamic().elm.unsafeCast<Element>()
@@ -227,10 +248,17 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
             @Suppress("UNSAFE_CALL")
             willRemoveStyleNames[j].forEach { elm.style.asDynamic()[it] = "" }
         }
+        willRemovePropID.forEachIndexed { id, j ->
+            val elm = diffElements[id].asDynamic().elm
+            @Suppress("UNSAFE_CALL")
+            willRemovePropNames[j].forEach { elm[it] = "" }
+        }
         willRemoveAttrID.clear()
         willRemoveAttrNames.clear()
         willRemoveStyleID.clear()
         willRemoveStyleNames.clear()
+        willRemovePropID.clear()
+        willRemovePropNames.clear()
         diffElements.clear()
         unlock()
     }
@@ -239,7 +267,7 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
         list.add(data)
         if (!started && lockNums == 0) {
             started = true
-            requestIdleCallback(this::patchLoop)
+            requestIdleCallback(fn2)
         }
     }
 
@@ -247,7 +275,7 @@ actual class Provider(actual val store: Data<*>, val eventProxy: (String) -> Uni
         nodesList.add(nodes)
         if (!started && lockNums == 0) {
             started = true
-            requestIdleCallback(this::patchLoop)
+            requestIdleCallback(fn2)
         }
     }
 

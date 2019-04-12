@@ -89,12 +89,12 @@ external interface DOMEvents<T> {
     var onInvalidCapture: FormEventHandler<T>?
     @JsName("onload")
     var onLoad: SarlaEventHandler<T>?
-    @JsName("onloadcapture")
-    var onLoadCapture: SarlaEventHandler<T>?
+    /*@JsName("onloadcapture")
+    var onLoadCapture: SarlaEventHandler<T>?*/
     @JsName("onerror")
     var onError: SarlaEventHandler<T>?
-    @JsName("onerrorcapture")
-    var onErrorCapture: SarlaEventHandler<T>?
+    /*@JsName("onerrorcapture")
+    var onErrorCapture: SarlaEventHandler<T>?*/
     @JsName("onkeydown")
     var onKeyDown: KeyboardEventHandler<T>?
     @JsName("onkeydowncapture")
@@ -109,8 +109,8 @@ external interface DOMEvents<T> {
     var onKeyUpCapture: KeyboardEventHandler<T>?
     @JsName("onabort")
     var onAbort: SarlaEventHandler<T>?
-    @JsName("onabortcapture")
-    var onAbortCapture: SarlaEventHandler<T>?
+    /*@JsName("onabortcapture")
+    var onAbortCapture: SarlaEventHandler<T>?*/
     @JsName("oncanplay")
     var onCanPlay: SarlaEventHandler<T>?
     @JsName("oncanplaycapture")
@@ -203,9 +203,9 @@ external interface DOMEvents<T> {
     var onContextMenu: MouseEventHandler<T>?
     @JsName("oncontextmenucapture")
     var onContextMenuCapture: MouseEventHandler<T>?
-    @JsName("ondoubleclick")
+    @JsName("ondblclick")
     var onDoubleClick: MouseEventHandler<T>?
-    @JsName("ondoubleclickcapture")
+    @JsName("ondblclickcapture")
     var onDoubleClickCapture: MouseEventHandler<T>?
     @JsName("ondrag")
     var onDrag: DragEventHandler<T>?
@@ -492,7 +492,7 @@ external interface AllHTMLAttributes<T> : HTMLAttributes<T> {
     var target: String?
     var type: String?
     var useMap: String?
-    var value: Any?
+    var value: String?
     var width: Any?
     var wmode: String?
     var wrap: String?
@@ -536,7 +536,7 @@ external interface ButtonHTMLAttributes<T> : HTMLAttributes<T> {
     var formTarget: String?
     var name: String?
     var type: String?
-    var value: Any?
+    var value: String?
 }
 external interface CanvasHTMLAttributes<T> : HTMLAttributes<T> {
     var height: Any?
@@ -645,7 +645,7 @@ external interface InputHTMLAttributes<T> : HTMLAttributes<T> {
     var src: String?
     var step: Any?
     var type: String?
-    var value: Any?
+    var value: String?
     var width: Any?
 }
 external interface KeygenHTMLAttributes<T> : HTMLAttributes<T> {
@@ -662,7 +662,7 @@ external interface LabelHTMLAttributes<T> : HTMLAttributes<T> {
     var htmlFor: String?
 }
 external interface LiHTMLAttributes<T> : HTMLAttributes<T> {
-    var value: Any?
+    var value: String?
 }
 external interface LinkHTMLAttributes<T> : HTMLAttributes<T> {
     var `as`: String?
@@ -706,7 +706,7 @@ external interface MeterHTMLAttributes<T> : HTMLAttributes<T> {
     var max: Any?
     var min: Any?
     var optimum: Number?
-    var value: Any?
+    var value: String?
 }
 external interface QuoteHTMLAttributes<T> : HTMLAttributes<T> {
     var cite: String?
@@ -735,7 +735,7 @@ external interface OptionHTMLAttributes<T> : HTMLAttributes<T> {
     var disabled: Boolean?
     var label: String?
     var selected: Boolean?
-    var value: Any?
+    var value: String?
 }
 external interface OutputHTMLAttributes<T> : HTMLAttributes<T> {
     var form: String?
@@ -744,11 +744,11 @@ external interface OutputHTMLAttributes<T> : HTMLAttributes<T> {
 }
 external interface ParamHTMLAttributes<T> : HTMLAttributes<T> {
     var name: String?
-    var value: Any?
+    var value: String?
 }
 external interface ProgressHTMLAttributes<T> : HTMLAttributes<T> {
     var max: Any?
-    var value: Any?
+    var value: String?
 }
 external interface ScriptHTMLAttributes<T> : HTMLAttributes<T> {
     var async: Boolean?
@@ -770,7 +770,7 @@ external interface SelectHTMLAttributes<T> : HTMLAttributes<T> {
     var name: String?
     var required: Boolean?
     var size: Number?
-    var value: Any?
+    var value: String?
 }
 external interface SourceHTMLAttributes<T> : HTMLAttributes<T> {
     var media: String?
@@ -804,7 +804,7 @@ external interface TextareaHTMLAttributes<T> : HTMLAttributes<T> {
     var readOnly: Boolean?
     var required: Boolean?
     var rows: Number?
-    var value: Any?
+    var value: String?
     var wrap: String?
 }
 external interface TdHTMLAttributes<T> : HTMLAttributes<T> {
