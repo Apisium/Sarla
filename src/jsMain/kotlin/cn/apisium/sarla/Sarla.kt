@@ -1,5 +1,6 @@
 package cn.apisium.sarla
 
+import cn.apisium.sarla.nodes.NodeBlock
 import kotlin.reflect.KClass
 
 @Suppress("NOTHING_TO_INLINE", "UNUSED")
@@ -51,3 +52,16 @@ actual operator fun Data<Int>.dec(): Data<Int> {
     provider.notify(this)
     return this
 }
+
+@Suppress("NOTHING_TO_INLINE", "UNUSED")
+actual inline fun NodeBlock.awesome() { div {
+    span {
+        styles {
+            color = "transparent"
+            webkitBackgroundClip = "text"
+            backgroundImage = "linear-gradient(135deg,#667eea 0%,#764ba2 100%)"
+        }
+        +"Sarla is awesome, your code will be like poetry "
+    }
+    +"\uD83D\uDCDC"
+} }

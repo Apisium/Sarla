@@ -85,6 +85,9 @@ actual open class NodeBlock(parent: BaseNode? = null): BaseNode(parent) {
     actual inline fun input(bind: Data<String>, className: String?, noinline block: (D<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>.() -> Unit)?) {
         append(D<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>(this, "input", className) { if (block != null) let(block); bindWith(bind) })
     }
+    actual inline fun textarea(bind: Data<String>, className: String?, noinline block: (D<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>.() -> Unit)?) {
+        append(D<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>(this, "textarea", className) { if (block != null) let(block); bindWith(bind) })
+    }
 
     actual inline fun a(void: Int, className: String?, noinline block: D<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>.() -> Unit) { append(D(this, "a", className, block)) }
     actual inline fun address(void: Int, className: String?, noinline block: D<HTMLAttributes<HTMLElement>, HTMLElement>.() -> Unit) { append(D(this, "address", className, block)) }

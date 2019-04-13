@@ -14,6 +14,17 @@ annotation class SarlaDsl
 @Experimental
 annotation class ExperimentalTextHTML
 
+fun classes (vararg names: String?): String {
+    var ret = ""
+    names.forEach { if (it != null) ret += it }
+    return ret
+}
+fun classes (vararg pairs: Pair<Boolean, String>): String {
+    var ret = ""
+    pairs.forEach { if (it.first) ret += it.second }
+    return ret
+}
+
 expect abstract class Sarla(provider: Provider) {
     val provider: Provider
     val store: Data<*>
@@ -74,3 +85,6 @@ interface EffectPostRemove { fun postRemove () }
 interface EffectShouldPatch { fun shouldPatch () }
 interface EffectPreRender { fun preRender () }
 interface EffectPostRender { fun postRender () }
+
+@Deprecated("Just have fun.")
+expect inline fun NodeBlock.awesome()

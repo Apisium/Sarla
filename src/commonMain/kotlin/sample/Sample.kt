@@ -1,23 +1,15 @@
 package sample
 
-import cn.apisium.sarla.inc
+import cn.apisium.sarla.awesome
 import cn.apisium.sarla.render
 import cn.apisium.sarla.sarla
 
 val component = sarla {
-    var times = data(0)
     val str = data("")
     h {
-        button {
-            events { onClick = { times++ } }
-            +"Click me!"
-        }
-        div(0) {
-            styles { color = if (times() > 5) "red" else "blue" }
-            +"You have clicked: ${times()}  "
-            +"You have typed: ${str()}"
-        }
+        div(0) { +"Typed: ${str()}" }
         input(str)
+        awesome()
     }
 }
 
